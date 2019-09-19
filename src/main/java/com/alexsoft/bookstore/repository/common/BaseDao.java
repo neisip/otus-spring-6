@@ -4,8 +4,7 @@ import java.util.List;
 
 public interface BaseDao<E> {
 
-    void insert(E entity);
-   // void delete(long id);
+    boolean insert(E entity);
     List<E> getAll();
     Boolean contains(long id);
 }

@@ -1,7 +1,9 @@
 package com.alexsoft.bookstore.repository.book;
 
-import com.alexsoft.bookstore.domain.AuthorDO;
 import com.alexsoft.bookstore.domain.BookDO;
+import com.alexsoft.bookstore.utils.mappers.BookMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
@@ -10,6 +12,7 @@ import java.util.*;
 
 @Repository
 public class BookDaoImpl implements BookDao {
+    static private Logger logger = LoggerFactory.getLogger(BookDaoImpl.class);
     private NamedParameterJdbcOperations operations;
 
     private RowMapper<BookDO> mapping = (rs, rowNum) -> new BookDO(
@@ -23,63 +26,69 @@ public class BookDaoImpl implements BookDao {
     }
 
     @Override
-    public void deleteByTitle(String title) {
-        operations.update("DELETE FROM books WHERE title = :title ", Collections.singletonMap("title", title));
-    }
-
-    @Override
-    public void showBooksByAuthorName(String name) {
-        List<BookDO> books = operations.query("SELECT * FROM books JOIN authors ON books.author_id = authors.id WHERE authors.name = :name",Collections.singletonMap("name", name), mapping);
-        if(books != null && !books.isEmpty()) {
-            books.forEach(System.out::println);
+    public boolean deleteByTitle(String title) {
+        try {
+            return operations.update("DELETE FROM books WHERE title = :title ", Collections.singletonMap("title", title)) != 0;
+        } catch (Exception e) {
+            logger.error("Failed to delete book by title " + title, e);
+            return false;
         }
     }
 
     @Override
-    public void showBooksByGenreTitle(String title) {
-        List<BookDO> books = operations.query("SELECT * FROM books JOIN genres ON books.genre_id = genres.id WHERE genres.title = :title",Collections.singletonMap("title", title), mapping);
-        if(books != null && !books.isEmpty()) {
-            books.forEach(System.out::println);
+    public List<BookDO> getBooksByAuthorName(String name) {
+        try {
+            return operations.query("SELECT * FROM books JOIN authors ON books.author_id = authors.id WHERE authors.name = :name", Collections.singletonMap("name", name), mapping);
+        } catch (Exception e) {
+            logger.error("Failed to get book by name " + name, e);
+            return Collections.emptyList();
         }
     }
 
     @Override
-    public void insert(BookDO entity) {
+    public List<BookDO> getBooksByGenreTitle(String title) {
+        try {
+            return operations.query("SELECT * FROM books JOIN genres ON books.genre_id = genres.id WHERE genres.title = :title", Collections.singletonMap("title", title), mapping);
+        } catch (Exception e) {
+            logger.error("Failed to get book by genre title  " + title, e);
+            return Collections.emptyList();
+        }
+    }
 
-        Map<String, Object> m = new LinkedHashMap<>();
-        m.put("id", entity.getId());
-        m.put("gmt_create", new Date());
-        m.put("title", entity.getTitle());
-        m.put("author_id", entity.getAuthorId());
-        m.put("genre_id", entity.getGenreId());
+    @Override
+    public boolean insert(BookDO entity) {
 
-        String stmt = contains(entity.getId())?
-                "UPDATE books SET title = :title, author_id = :author_id, genre_id = :genre_id, gmt_create = :gmt_create WHERE id = :id":
+        Map<String, Object> m = new BookMapper().getMapFor(entity);
+
+        String stmt = contains(entity.getId()) ?
+                "UPDATE books SET title = :title, author_id = :author_id, genre_id = :genre_id, gmt_create = :gmt_create WHERE id = :id" :
                 "INSERT INTO books (id, title, author_id, genre_id, gmt_create) VALUES (:id, :title, :author_id, :genre_id, :gmt_create)";
-        operations.update(stmt, m);
+        try {
+            return operations.update(stmt, m) != 0;
+        } catch (Exception e) {
+            logger.error("Failed to insert entity " + entity.getId(), e);
+            return false;
+        }
     }
-//
-//    @Override
-//    public void delete(long id) {
-//        operations.update("DELETE FROM books WHERE id = :id ", Collections.singletonMap("id", id));
-//    }
 
     @Override
     public List<BookDO> getAll() {
-        return operations.query("SELECT * FROM books", mapping);
+        try {
+            return operations.query("SELECT * FROM books", mapping);
+        } catch (Exception e) {
+            logger.error("Failed to get all books", e);
+            return Collections.emptyList();
+        }
     }
-
 
     @Override
     public Boolean contains(long id) {
-        return operations.queryForObject("SELECT EXISTS(SELECT 1 FROM books WHERE id = :id)", Collections.singletonMap("id", id), Boolean.class);
+        try {
+            return operations.queryForObject("SELECT EXISTS(SELECT 1 FROM books WHERE id = :id)", Collections.singletonMap("id", id), Boolean.class);
+        } catch (Exception e) {
+            logger.error("Failed to check if id contains " + id, e);
+            return false;
+        }
     }
 
-
-//    @Override
-//    public BookDO get(long id) {
-//        return operations.queryForObject("SELECT * FROM books WHERE id = :id ",
-//                Collections.singletonMap("id", id),
-//                mapping);
-//    }
 }

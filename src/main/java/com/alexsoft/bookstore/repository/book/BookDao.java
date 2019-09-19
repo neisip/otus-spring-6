@@ -6,7 +6,7 @@ import com.alexsoft.bookstore.repository.common.BaseDao;
 import java.util.List;
 
 public interface BookDao extends BaseDao<BookDO> {
-    void deleteByTitle(String title);
-    void showBooksByAuthorName(String name);
-    void showBooksByGenreTitle(String title);
+    boolean deleteByTitle(String title);
+    List<BookDO> getBooksByAuthorName(String name);
+    List<BookDO> getBooksByGenreTitle(String title);
 }

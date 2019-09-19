@@ -6,9 +6,12 @@ import com.alexsoft.bookstore.domain.GenreDO;
 import com.alexsoft.bookstore.repository.author.AuthorDao;
 import com.alexsoft.bookstore.repository.book.BookDao;
 import com.alexsoft.bookstore.repository.genre.GenreDao;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
+
+import java.io.PrintStream;
 
 import static org.springframework.shell.standard.ShellOption.NULL;
 
@@ -19,43 +22,47 @@ public class BookstoreShellControllerImpl implements BookstoreShellController {
     private final AuthorDao authorDao;
     private final BookDao bookDao;
     private final GenreDao genreDao;
+    private final PrintStream consoleOutput;
 
     public BookstoreShellControllerImpl(AuthorDao authorDao,
                                         BookDao bookDao,
-                                        GenreDao genreDao) {
+                                        GenreDao genreDao,
+                                        @Qualifier("Bookstore_CO")
+                                        PrintStream consoleOutput) {
         this.authorDao = authorDao;
         this.bookDao = bookDao;
         this.genreDao = genreDao;
+        this.consoleOutput = consoleOutput;
     }
 
     @Override
     @ShellMethod(value = "Show all books", key = {"sb"})
     public void showBooks() {
-        bookDao.getAll().forEach(System.out::println);
+        bookDao.getAll().forEach(consoleOutput::println);
     }
 
     @Override
     @ShellMethod(value = "Show all genres", key = {"sg"})
     public void showGenres() {
-        genreDao.getAll().forEach(System.out::println);
+        genreDao.getAll().forEach(consoleOutput::println);
     }
 
     @Override
     @ShellMethod(value = "Show all authors", key = {"sa"})
     public void showAuthors() {
-        authorDao.getAll().forEach(System.out::println);
+        authorDao.getAll().forEach(consoleOutput::println);
     }
 
     @Override
     @ShellMethod(value = "Show book by author name", key = {"bban"})
     public void showBooksByAuthorName(@ShellOption("-n")String name) {
-        bookDao.showBooksByAuthorName(name);
+        bookDao.getBooksByAuthorName(name).forEach(consoleOutput::println);
     }
 
     @Override
     @ShellMethod(value = "Show book by genre title", key = {"bbgt"})
     public void showBooksByGenreTitle(@ShellOption("-t") String title) {
-        bookDao.showBooksByGenreTitle(title);
+        bookDao.getBooksByGenreTitle(title).forEach(consoleOutput::println);
     }
 
     @Override

@@ -1,7 +1,9 @@
 package com.alexsoft.bookstore.repository.genre;
 
-import com.alexsoft.bookstore.domain.BookDO;
 import com.alexsoft.bookstore.domain.GenreDO;
+import com.alexsoft.bookstore.utils.mappers.GenreMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
@@ -9,7 +11,9 @@ import org.springframework.stereotype.Repository;
 import java.util.*;
 
 @Repository
-public class GenreDaoImpl implements GenreDao{
+public class GenreDaoImpl implements GenreDao {
+
+    static private Logger logger = LoggerFactory.getLogger(GenreDaoImpl.class);
     private NamedParameterJdbcOperations operations;
 
     private RowMapper<GenreDO> mapping = (rs, rowNum) -> new GenreDO(
@@ -21,44 +25,47 @@ public class GenreDaoImpl implements GenreDao{
     }
 
     @Override
-    public void insert(GenreDO entity) {
-        Map<String, Object> m = new LinkedHashMap<>();
-        m.put("id", entity.getId());
-        m.put("gmt_create", new Date());
-        m.put("title", entity.getTitle());
+    public boolean insert(GenreDO entity) {
+        Map<String, Object> m = new GenreMapper().getMapFor(entity);
 
         String stmt = contains(entity.getId()) ?
-                "UPDATE genres SET title = :title, gmt_create = :gmt_create WHERE id = :id":
+                "UPDATE genres SET title = :title, gmt_create = :gmt_create WHERE id = :id" :
                 "INSERT INTO genres (id, title, gmt_create) VALUES (:id, :title, :gmt_create)";
-        operations.update(stmt, m);
+        try {
+            return operations.update(stmt, m) != 0;
+        } catch (Exception e) {
+            logger.error("Got exception when executing update for entity " + entity.getId(), e);
+            return false;
+        }
     }
-//
-//    @Override
-//    public void delete(long id) {
-//        operations.update("DELETE FROM genres WHERE id = :id ", Collections.singletonMap("id", id));
-//    }
 
     @Override
     public List<GenreDO> getAll() {
-        return operations.query("SELECT * FROM genres", mapping);
+        try {
+            return operations.query("SELECT * FROM genres", mapping);
+        } catch (Exception e) {
+            logger.error("Got exception while trying to get all genres", e);
+            return Collections.emptyList();
+        }
     }
 
     @Override
     public Boolean contains(long id) {
-        return operations.queryForObject("SELECT EXISTS(SELECT 1 FROM genres WHERE id = :id)", Collections.singletonMap("id", id), Boolean.class);
+        try {
+            return operations.queryForObject("SELECT EXISTS(SELECT 1 FROM genres WHERE id = :id)", Collections.singletonMap("id", id), Boolean.class);
+        } catch (Exception e) {
+            logger.error("Failed to check if genres contains " + id, e);
+            return false;
+        }
     }
 
-//    @Override
-//    public GenreDO get(long id) {
-//        return operations.queryForObject("SELECT * FROM genres WHERE id = :id ",
-//                Collections.singletonMap("id", id),
-//                mapping);
-//
-//    }
-
-
     @Override
-    public void deleteByTitle(String title) {
-        operations.update("DELETE FROM genres WHERE title = :title ", Collections.singletonMap("title", title));
+    public boolean deleteByTitle(String title) {
+        try {
+            return operations.update("DELETE FROM genres WHERE title = :title ", Collections.singletonMap("title", title)) != 0;
+        } catch (Exception e) {
+            logger.error("Failed to delete genre by title " + title, e);
+            return false;
+        }
     }
 }

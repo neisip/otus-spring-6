@@ -5,5 +5,5 @@ import com.alexsoft.bookstore.repository.common.BaseDao;
 
 public interface AuthorDao extends BaseDao<AuthorDO> {
 
-    void deleteByName(String name);
+    boolean deleteByName(String name);
 }
