@@ -4,6 +4,7 @@ import com.alexsoft.bookstore.domain.BookDO;
 import com.alexsoft.bookstore.repository.author.AuthorDao;
 import com.alexsoft.bookstore.repository.book.BookDao;
 import com.alexsoft.bookstore.repository.genre.GenreDao;
+import com.alexsoft.bookstore.utils.LazyEntity;
 import org.junit.Test;
 
 import java.io.PrintStream;
@@ -23,10 +24,10 @@ public class BookstoreShellControllerTest {
 
     private List<BookDO> makeStubBooks() {
 
-        BookDO b1 = new BookDO(1L, "Stub1", 1L, 1L);
-        BookDO b2 = new BookDO(2L, "Stub2", 2L, 2L);
+        BookDO b1 = new BookDO(1L, "Stub1", new LazyEntity<>(1L, null), new LazyEntity<>(1L, null));
+        BookDO b2 = new BookDO(2L, "Stub2", new LazyEntity<>(2L, null), new LazyEntity<>(2L, null));
 
-        LinkedList<BookDO> l = new LinkedList<BookDO>();
+        LinkedList<BookDO> l = new LinkedList<>();
         l.add(b1);
         l.add(b2);
         return l;

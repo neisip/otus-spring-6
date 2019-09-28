@@ -1,6 +1,11 @@
 package com.alexsoft.bookstore.repository.book;
 
+import com.alexsoft.bookstore.domain.AuthorDO;
 import com.alexsoft.bookstore.domain.BookDO;
+import com.alexsoft.bookstore.domain.GenreDO;
+import com.alexsoft.bookstore.repository.author.AuthorDao;
+import com.alexsoft.bookstore.repository.genre.GenreDao;
+import com.alexsoft.bookstore.utils.LazyEntity;
 import com.alexsoft.bookstore.utils.mappers.BookMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,21 +13,29 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 @Repository
 public class BookDaoImpl implements BookDao {
     static private Logger logger = LoggerFactory.getLogger(BookDaoImpl.class);
     private NamedParameterJdbcOperations operations;
+    private GenreDao genreDao;
+    private AuthorDao authorDao;
 
     private RowMapper<BookDO> mapping = (rs, rowNum) -> new BookDO(
             rs.getLong("id"),
             rs.getString("title"),
-            rs.getLong("author_id"),
-            rs.getLong("genre_id"));
+            new LazyEntity<AuthorDO>(rs.getLong("author_id"), authorDao::getById),
+            new LazyEntity<GenreDO>(rs.getLong("genre_id"), genreDao::getById));
 
-    public BookDaoImpl(NamedParameterJdbcOperations operations) {
+    public BookDaoImpl(NamedParameterJdbcOperations operations,
+                       GenreDao genreDao,
+                       AuthorDao authorDao) {
         this.operations = operations;
+        this.genreDao = genreDao;
+        this.authorDao = authorDao;
     }
 
     @Override

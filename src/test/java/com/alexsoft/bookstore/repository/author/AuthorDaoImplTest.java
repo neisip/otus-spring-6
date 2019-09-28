@@ -4,12 +4,9 @@ import com.alexsoft.bookstore.domain.AuthorDO;
 import com.alexsoft.bookstore.utils.mappers.AuthorMapper;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +24,7 @@ public class AuthorDaoImplTest {
     private AuthorDO ma2 = new AuthorDO(2L, "2");
 
     private List<AuthorDO> makeMockAuthorList() {
-        List n = new LinkedList();
+        List<AuthorDO> n = new LinkedList<>();
         n.add(ma1);
         n.add(ma2);
         return n;

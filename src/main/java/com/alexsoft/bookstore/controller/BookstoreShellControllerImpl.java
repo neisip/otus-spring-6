@@ -6,6 +6,7 @@ import com.alexsoft.bookstore.domain.GenreDO;
 import com.alexsoft.bookstore.repository.author.AuthorDao;
 import com.alexsoft.bookstore.repository.book.BookDao;
 import com.alexsoft.bookstore.repository.genre.GenreDao;
+import com.alexsoft.bookstore.utils.LazyEntity;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
@@ -28,7 +29,7 @@ public class BookstoreShellControllerImpl implements BookstoreShellController {
                                         BookDao bookDao,
                                         GenreDao genreDao,
                                         @Qualifier("Bookstore_CO")
-                                        PrintStream consoleOutput) {
+                                                PrintStream consoleOutput) {
         this.authorDao = authorDao;
         this.bookDao = bookDao;
         this.genreDao = genreDao;
@@ -54,8 +55,18 @@ public class BookstoreShellControllerImpl implements BookstoreShellController {
     }
 
     @Override
+    @ShellMethod(value = "Show all library", key = {"sal"})
+    public void showAll() {
+        bookDao.getAll().forEach(bookDO -> {
+            consoleOutput.println(bookDO);
+            consoleOutput.println(bookDO.getAuthorDO().getEntity());
+            consoleOutput.println(bookDO.getGenreDO().getEntity());
+        });
+    }
+
+    @Override
     @ShellMethod(value = "Show book by author name", key = {"bban"})
-    public void showBooksByAuthorName(@ShellOption("-n")String name) {
+    public void showBooksByAuthorName(@ShellOption("-n") String name) {
         bookDao.getBooksByAuthorName(name).forEach(consoleOutput::println);
     }
 
@@ -71,17 +82,25 @@ public class BookstoreShellControllerImpl implements BookstoreShellController {
                         @ShellOption("-t") String title,
                         @ShellOption(value = {"-ai"}, defaultValue = NULL) Long authorId,
                         @ShellOption(value = {"-gi"}, defaultValue = NULL) Long genreId) {
-        bookDao.insert(new BookDO(id, title, authorId, genreId));
+        bookDao.insert(
+                new BookDO(
+                        id,
+                        title,
+                        new LazyEntity<>(authorId, null),
+                        new LazyEntity<>(genreId, null)
+                ));
     }
+
     @Override
     @ShellMethod(value = "Add genre", key = {"ag"})
-    public void addGenre(@ShellOption("-id")  Long id,
-                         @ShellOption("-t")  String title) {
+    public void addGenre(@ShellOption("-id") Long id,
+                         @ShellOption("-t") String title) {
         genreDao.insert(new GenreDO(id, title));
     }
+
     @Override
     @ShellMethod(value = "Add author", key = {"aa"})
-    public void addAuthor(@ShellOption("-id")  Long id, @ShellOption("-n")  String name) {
+    public void addAuthor(@ShellOption("-id") Long id, @ShellOption("-n") String name) {
         authorDao.insert(new AuthorDO(id, name));
     }
 
@@ -102,5 +121,4 @@ public class BookstoreShellControllerImpl implements BookstoreShellController {
     public void removeBookByTitle(String title) {
         bookDao.deleteByTitle(title);
     }
-
 }

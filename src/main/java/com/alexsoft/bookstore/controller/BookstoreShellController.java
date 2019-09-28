@@ -8,6 +8,7 @@ public interface BookstoreShellController {
     void showBooks();
     void showGenres();
     void showAuthors();
+    void showAll();
     void showBooksByAuthorName(String name);
     void showBooksByGenreTitle(String title);
 
@@ -18,4 +19,5 @@ public interface BookstoreShellController {
     void removeGenreByTitle(String title);
     void removeAuthorByName(String name);
     void removeBookByTitle(String title);
+
 }

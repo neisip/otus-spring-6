@@ -14,8 +14,8 @@ public class BookMapper implements Mapper<BookDO> {
         m.put("id", entity.getId());
         m.put("gmt_create", new Date());
         m.put("title", entity.getTitle());
-        m.put("author_id", entity.getAuthorId());
-        m.put("genre_id", entity.getGenreId());
+        m.put("author_id", entity.getAuthorDO().getId());
+        m.put("genre_id", entity.getGenreDO().getId());
         return m;
     }
 }

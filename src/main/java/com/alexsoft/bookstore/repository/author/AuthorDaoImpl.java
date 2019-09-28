@@ -68,4 +68,14 @@ public class AuthorDaoImpl implements AuthorDao {
             return false;
         }
     }
+
+    @Override
+    public AuthorDO getById(Long id) {
+        try {
+            return operations.queryForObject("SELECT * FROM authors WHERE id = :id", Collections.singletonMap("id", id), mapping);
+        } catch (Exception e) {
+            logger.error("getById for id: " + id + "failed", e);
+            return null;
+        }
+    }
 }

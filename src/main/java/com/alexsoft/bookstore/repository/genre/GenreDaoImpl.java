@@ -50,6 +50,16 @@ public class GenreDaoImpl implements GenreDao {
     }
 
     @Override
+    public GenreDO getById(Long id) {
+        try {
+            return operations.queryForObject("SELECT * FROM genres WHERE id = :id", Collections.singletonMap("id", id), mapping);
+        } catch (Exception e) {
+            logger.error("getById for id: " + id + "failed", e);
+            return null;
+        }
+    }
+
+    @Override
     public Boolean contains(long id) {
         try {
             return operations.queryForObject("SELECT EXISTS(SELECT 1 FROM genres WHERE id = :id)", Collections.singletonMap("id", id), Boolean.class);

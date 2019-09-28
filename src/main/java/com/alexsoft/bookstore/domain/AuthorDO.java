@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class AuthorDO {
+public class AuthorDO implements IdProvider {
     private Long id;
     private String name;
 }
