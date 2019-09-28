@@ -20,7 +20,7 @@ public class BookstoreShellControllerTest {
     private GenreDao genreDao = mock(GenreDao.class);
     private PrintStream output = mock(PrintStream.class);
 
-    private BookstoreShellController sut = new BookstoreShellControllerImpl(authorDao, bookDao, genreDao, output);
+    private BookstoreShellController sut = new BookstoreShellControllerImpl(authorDao, bookDao, genreDao, new ConsoleContext(output));
 
     private List<BookDO> makeStubBooks() {
 

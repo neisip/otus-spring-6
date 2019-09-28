@@ -7,7 +7,6 @@ import com.alexsoft.bookstore.repository.author.AuthorDao;
 import com.alexsoft.bookstore.repository.book.BookDao;
 import com.alexsoft.bookstore.repository.genre.GenreDao;
 import com.alexsoft.bookstore.utils.LazyEntity;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
@@ -28,12 +27,11 @@ public class BookstoreShellControllerImpl implements BookstoreShellController {
     public BookstoreShellControllerImpl(AuthorDao authorDao,
                                         BookDao bookDao,
                                         GenreDao genreDao,
-                                        @Qualifier("Bookstore_CO")
-                                                PrintStream consoleOutput) {
+                                                ConsoleContext consoleContext) {
         this.authorDao = authorDao;
         this.bookDao = bookDao;
         this.genreDao = genreDao;
-        this.consoleOutput = consoleOutput;
+        this.consoleOutput = consoleContext.getOutput();
     }
 
     @Override
