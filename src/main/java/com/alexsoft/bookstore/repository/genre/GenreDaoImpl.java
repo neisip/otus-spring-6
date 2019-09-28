@@ -1,7 +1,7 @@
 package com.alexsoft.bookstore.repository.genre;
 
 import com.alexsoft.bookstore.domain.GenreDO;
-import com.alexsoft.bookstore.utils.mappers.GenreMapper;
+import com.alexsoft.bookstore.utils.mappers.GenreSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.RowMapper;
@@ -26,7 +26,7 @@ public class GenreDaoImpl implements GenreDao {
 
     @Override
     public boolean insert(GenreDO entity) {
-        Map<String, Object> m = new GenreMapper().getMapFor(entity);
+        Map<String, Object> m = new GenreSerializer().getMapFor(entity);
 
         String stmt = contains(entity.getId()) ?
                 "UPDATE genres SET title = :title, gmt_create = :gmt_create WHERE id = :id" :

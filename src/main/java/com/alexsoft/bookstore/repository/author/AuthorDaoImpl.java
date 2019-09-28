@@ -1,7 +1,7 @@
 package com.alexsoft.bookstore.repository.author;
 
 import com.alexsoft.bookstore.domain.AuthorDO;
-import com.alexsoft.bookstore.utils.mappers.AuthorMapper;
+import com.alexsoft.bookstore.utils.mappers.AuthorSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.RowMapper;
@@ -27,7 +27,7 @@ public class AuthorDaoImpl implements AuthorDao {
     @Override
     public boolean insert(AuthorDO entity) {
 
-        Map<String, Object> m = new AuthorMapper().getMapFor(entity);
+        Map<String, Object> m = new AuthorSerializer().getMapFor(entity);
         String stmt = contains(entity.getId()) ?
                 "UPDATE authors SET name = :name, gmt_create = :gmt_create WHERE id = :id" :
                 "INSERT INTO authors (id, name, gmt_create) VALUES (:id, :name, :gmt_create)";

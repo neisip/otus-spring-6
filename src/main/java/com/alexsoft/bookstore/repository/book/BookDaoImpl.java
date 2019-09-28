@@ -6,7 +6,7 @@ import com.alexsoft.bookstore.domain.GenreDO;
 import com.alexsoft.bookstore.repository.author.AuthorDao;
 import com.alexsoft.bookstore.repository.genre.GenreDao;
 import com.alexsoft.bookstore.utils.LazyEntity;
-import com.alexsoft.bookstore.utils.mappers.BookMapper;
+import com.alexsoft.bookstore.utils.mappers.BookSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.RowMapper;
@@ -71,7 +71,7 @@ public class BookDaoImpl implements BookDao {
     @Override
     public boolean insert(BookDO entity) {
 
-        Map<String, Object> m = new BookMapper().getMapFor(entity);
+        Map<String, Object> m = new BookSerializer().getMapFor(entity);
 
         String stmt = contains(entity.getId()) ?
                 "UPDATE books SET title = :title, author_id = :author_id, genre_id = :genre_id, gmt_create = :gmt_create WHERE id = :id" :

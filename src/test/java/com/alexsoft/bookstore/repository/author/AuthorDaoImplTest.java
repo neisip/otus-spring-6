@@ -1,7 +1,7 @@
 package com.alexsoft.bookstore.repository.author;
 
 import com.alexsoft.bookstore.domain.AuthorDO;
-import com.alexsoft.bookstore.utils.mappers.AuthorMapper;
+import com.alexsoft.bookstore.utils.mappers.AuthorSerializer;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.jdbc.core.RowMapper;
@@ -31,7 +31,7 @@ public class AuthorDaoImplTest {
     }
 
     private List<AuthorDO> ml = makeMockAuthorList();
-    private Map<String, ?> authorMap = new AuthorMapper().getMapFor(ma1);
+    private Map<String, ?> authorMap = new AuthorSerializer().getMapFor(ma1);
 
     @Test
     public void insertUpdatesDB() {

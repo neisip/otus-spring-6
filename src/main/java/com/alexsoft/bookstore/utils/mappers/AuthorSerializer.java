@@ -1,18 +1,19 @@
 package com.alexsoft.bookstore.utils.mappers;
 
-import com.alexsoft.bookstore.domain.GenreDO;
+import com.alexsoft.bookstore.domain.AuthorDO;
 
 import java.util.*;
 
-public class GenreMapper implements Mapper<GenreDO>{
+public class AuthorSerializer implements Serializer<AuthorDO> {
+
     @Override
-    public Map<String, Object> getMapFor(GenreDO entity) {
+    public Map<String, Object> getMapFor(AuthorDO entity) {
         if (entity == null) return Collections.emptyMap();
 
         Map<String, Object> m = new HashMap<>();
-        m.put("id", entity.getId());
+        m.put("name", entity.getName());
         m.put("gmt_create", new Date());
-        m.put("title", entity.getTitle());
+        m.put("id", entity.getId());
         return m;
     }
 }

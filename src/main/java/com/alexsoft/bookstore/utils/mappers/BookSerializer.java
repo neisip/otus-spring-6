@@ -4,7 +4,7 @@ import com.alexsoft.bookstore.domain.BookDO;
 
 import java.util.*;
 
-public class BookMapper implements Mapper<BookDO> {
+public class BookSerializer implements Serializer<BookDO> {
 
     @Override
     public Map<String, Object> getMapFor(BookDO entity) {
