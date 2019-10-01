@@ -1,3 +1,4 @@
 spring:
   liquibase.enabled: true
   h2.cosole.enabled: true
+
