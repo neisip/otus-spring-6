@@ -21,6 +21,7 @@ public class AuthorRepositoryImpl implements AuthorRepository {
     private EntityManager em;
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Author> findById(long id) {
         try {
             return Optional.ofNullable(em.find(Author.class, id));
@@ -60,6 +61,7 @@ public class AuthorRepositoryImpl implements AuthorRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Author> getAll() {
         try {
             return em.createQuery("select a from Author a", Author.class).getResultList();

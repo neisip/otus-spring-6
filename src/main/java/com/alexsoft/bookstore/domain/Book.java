@@ -3,6 +3,7 @@ package com.alexsoft.bookstore.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
 import java.util.List;
@@ -12,10 +13,9 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "books")
-@NamedEntityGraph(name = "BookWithAuthorAndGenreAndComment",
+@NamedEntityGraph(name = "BookWithAuthorAndGenre",
         attributeNodes = {@NamedAttributeNode(value = "author"),
-                @NamedAttributeNode(value = "genre"),
-                @NamedAttributeNode(value = "commentList")})
+                @NamedAttributeNode(value = "genre")})
 public class Book {
 
     @Id
@@ -25,26 +25,16 @@ public class Book {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @OneToOne(targetEntity = Author.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = Author.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private Author author;
 
-    @OneToOne(targetEntity = Genre.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(targetEntity = Genre.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "genre_id")
     private Genre genre;
 
-    @OneToMany(targetEntity = Comment.class, cascade = CascadeType.ALL)
+    @BatchSize(size = 10)
+    @OneToMany(targetEntity = Comment.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "book_id")
     private List<Comment> commentList;
-
-
-    @Override
-    public String toString() {
-        return "Book{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", authorId=" + author.getId() +
-                ", genreId=" + genre.getId() +
-                '}';
-    }
 }

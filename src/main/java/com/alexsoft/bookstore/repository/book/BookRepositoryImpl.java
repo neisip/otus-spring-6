@@ -40,9 +40,10 @@ public class BookRepositoryImpl implements BookRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Book> getBooksByAuthorName(String name) {
         try {
-            EntityGraph<?> entityGraph = em.getEntityGraph("BookWithAuthorAndGenreAndComment");
+            EntityGraph<?> entityGraph = em.getEntityGraph("BookWithAuthorAndGenre");
             TypedQuery<Book> query = em.createQuery("SELECT b FROM Book b WHERE b.author.name = :name", Book.class);
             query.setParameter("name", name);
             query.setHint("javax.persistence.fetchgraph", entityGraph);
@@ -54,9 +55,10 @@ public class BookRepositoryImpl implements BookRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Book> findBookByAuthorNameAndTitle(String authorName, String title) {
         try {
-            EntityGraph<?> entityGraph = em.getEntityGraph("BookWithAuthorAndGenreAndComment");
+            EntityGraph<?> entityGraph = em.getEntityGraph("BookWithAuthorAndGenre");
             TypedQuery<Book> query = em.createQuery("SELECT b FROM Book b WHERE b.author.name = :name AND b.title = :title", Book.class);
             query.setParameter("name", authorName);
             query.setParameter("title", title);
@@ -70,9 +72,10 @@ public class BookRepositoryImpl implements BookRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Book> getBooksByGenreTitle(String title) {
         try {
-            EntityGraph<?> entityGraph = em.getEntityGraph("BookWithAuthorAndGenreAndComment");
+            EntityGraph<?> entityGraph = em.getEntityGraph("BookWithAuthorAndGenre");
             TypedQuery<Book> query = em.createQuery("SELECT b FROM Book b WHERE b.genre.title = :title", Book.class);
             query.setParameter("title", title);
             query.setHint("javax.persistence.fetchgraph", entityGraph);
@@ -100,9 +103,10 @@ public class BookRepositoryImpl implements BookRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Book> getAll() {
         try {
-            EntityGraph<?> entityGraph = em.getEntityGraph("BookWithAuthorAndGenreAndComment");
+            EntityGraph<?> entityGraph = em.getEntityGraph("BookWithAuthorAndGenre");
             TypedQuery<Book> query = em.createQuery("SELECT b FROM Book b", Book.class);
             query.setHint("javax.persistence.fetchgraph", entityGraph);
             return query.getResultList();
@@ -113,9 +117,10 @@ public class BookRepositoryImpl implements BookRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Book> findById(long id) {
         try {
-            EntityGraph<?> entityGraph = em.getEntityGraph("BookWithAuthorAndGenreAndComment");
+            EntityGraph<?> entityGraph = em.getEntityGraph("BookWithAuthorAndGenre");
             TypedQuery<Book> query = em.createQuery("SELECT b FROM Book b WHERE b.id = :book_id", Book.class);
             query.setParameter("book_id", id);
             query.setHint("javax.persistence.fetchgraph", entityGraph);

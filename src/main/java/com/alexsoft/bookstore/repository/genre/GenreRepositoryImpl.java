@@ -51,6 +51,7 @@ public class GenreRepositoryImpl implements GenreRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Genre> getAll() {
         try {
             return em.createQuery("select g from Genre g", Genre.class).getResultList();
@@ -61,6 +62,7 @@ public class GenreRepositoryImpl implements GenreRepository {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Genre> findById(long id) {
         try {
             return Optional.ofNullable(em.find(Genre.class, id));
