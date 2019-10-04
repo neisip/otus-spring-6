@@ -1,25 +1,18 @@
 package com.alexsoft.bookstore.service;
 
 import com.alexsoft.bookstore.repository.book.BookRepository;
-import com.alexsoft.bookstore.repository.book.BookRepositoryImpl;
 import lombok.val;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
-
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-
 @DataJpaTest
-@Import({BookRepositoryImpl.class, CommentServiceImpl.class})
+@EnableJpaRepositories(basePackageClasses = BookRepository.class)
+@Import(CommentServiceImpl.class)
 public class CommentServiceTest {
-
-    @Autowired
-    private EntityManager em;
 
     @Autowired
     private BookRepository bookRepository;
@@ -31,7 +24,7 @@ public class CommentServiceTest {
     void commentIsAttachedToExistingBook() {
         //given
         val mtd = "Delete me!";
-        val books = bookRepository.getAll();
+        val books = bookRepository.findAll();
         val book = books.get(0);
 
         //when
