@@ -2,11 +2,9 @@ package com.alexsoft.bookstore.controller;
 
 import com.alexsoft.bookstore.domain.Author;
 import com.alexsoft.bookstore.domain.Book;
-import com.alexsoft.bookstore.domain.Comment;
 import com.alexsoft.bookstore.domain.Genre;
 import com.alexsoft.bookstore.repository.author.AuthorRepository;
 import com.alexsoft.bookstore.repository.book.BookRepository;
-import com.alexsoft.bookstore.repository.comment.CommentRepository;
 import com.alexsoft.bookstore.repository.genre.GenreRepository;
 import com.alexsoft.bookstore.service.CommentService;
 import lombok.val;
@@ -15,7 +13,6 @@ import org.springframework.shell.standard.ShellMethod;
 import org.springframework.shell.standard.ShellOption;
 
 import java.io.PrintStream;
-import java.util.Collections;
 
 import static org.springframework.shell.standard.ShellOption.NULL;
 
@@ -45,25 +42,25 @@ public class BookstoreShellControllerImpl implements BookstoreShellController {
     @Override
     @ShellMethod(value = "Show all books", key = {"sb"})
     public void showBooks() {
-        bookRepository.getAll().forEach(consoleOutput::println);
+        bookRepository.findAll().forEach(consoleOutput::println);
     }
 
     @Override
     @ShellMethod(value = "Show all genres", key = {"sg"})
     public void showGenres() {
-        genreRepository.getAll().forEach(consoleOutput::println);
+        genreRepository.findAll().forEach(consoleOutput::println);
     }
 
     @Override
     @ShellMethod(value = "Show all authors", key = {"sa"})
     public void showAuthors() {
-        authorRepository.getAll().forEach(consoleOutput::println);
+        authorRepository.findAll().forEach(consoleOutput::println);
     }
 
     @Override
     @ShellMethod(value = "Show all library", key = {"sal"})
     public void showAll() {
-        bookRepository.getAll().forEach(book -> {
+        bookRepository.findAll().forEach(book -> {
             consoleOutput.println(book);
             consoleOutput.println(book.getAuthor());
             consoleOutput.println(book.getGenre());
@@ -73,14 +70,14 @@ public class BookstoreShellControllerImpl implements BookstoreShellController {
 
     @Override
     @ShellMethod(value = "Show book by author name", key = {"bban"})
-    public void showBooksByAuthorName(@ShellOption("-n") String name) {
-        bookRepository.getBooksByAuthorName(name).forEach(consoleOutput::println);
+    public void showBooksByAuthorName(String name) {
+        bookRepository.findBooksByAuthorName(name).forEach(consoleOutput::println);
     }
 
     @Override
     @ShellMethod(value = "Show book by genre title", key = {"bbgt"})
-    public void showBooksByGenreTitle(@ShellOption("-t") String title) {
-        bookRepository.getBooksByGenreTitle(title).forEach(consoleOutput::println);
+    public void showBooksByGenreTitle(String title) {
+        bookRepository.findBooksByGenreTitle(title).forEach(consoleOutput::println);
     }
 
     @Override
@@ -123,7 +120,7 @@ public class BookstoreShellControllerImpl implements BookstoreShellController {
 
     @Override
     @ShellMethod(value = "Add genre", key = {"ag"})
-    public void addGenre( @ShellOption("-t") String title) {
+    public void addGenre(String title) {
         val g = new Genre();
         g.setTitle(title);
         genreRepository.save(g);
@@ -131,7 +128,7 @@ public class BookstoreShellControllerImpl implements BookstoreShellController {
 
     @Override
     @ShellMethod(value = "Add author", key = {"aa"})
-    public void addAuthor(@ShellOption("-n") String name) {
+    public void addAuthor(String name) {
         val g = new Author();
         g.setName(name);
         authorRepository.save(g);

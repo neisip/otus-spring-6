@@ -1,9 +1,11 @@
 package com.alexsoft.bookstore.repository.author;
 
 import com.alexsoft.bookstore.domain.Author;
-import com.alexsoft.bookstore.repository.common.BaseRepository;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Transactional;
 
-public interface AuthorRepository extends BaseRepository<Author> {
 
-    boolean deleteByName(String name);
+public interface AuthorRepository extends CrudRepository<Author, Long> {
+    @Transactional
+    void deleteByName(String name);
 }

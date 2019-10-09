@@ -1,4 +1,9 @@
 spring:
   liquibase.enabled: true
   h2.cosole.enabled: true
-
+  jpa:
+    properties:
+      hibernate:
+        show_sql: true
+        use_sql_comments: true
+        format_sql: true
