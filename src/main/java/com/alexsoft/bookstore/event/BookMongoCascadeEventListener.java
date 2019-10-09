@@ -11,6 +11,8 @@ import org.springframework.data.mongodb.core.mapping.event.BeforeConvertEvent;
 import org.springframework.data.mongodb.core.mapping.event.BeforeDeleteEvent;
 import org.springframework.stereotype.Component;
 
+import java.util.Objects;
+
 @Component
 public class BookMongoCascadeEventListener extends AbstractMongoEventListener<Book> {
 
@@ -30,13 +32,14 @@ public class BookMongoCascadeEventListener extends AbstractMongoEventListener<Bo
     public void onBeforeConvert(BeforeConvertEvent<Book> event) {
         super.onBeforeConvert(event);
         val book = event.getSource();
-        if (book.getAuthor() != null) {
-            authorRepository.save(book.getAuthor());
+        val author = book.getAuthor();
+        if (author != null && author.getId() == null) {
+            authorRepository.save(author);
         }
 
         val commentList = book.getCommentList();
         if (commentList != null && !commentList.isEmpty()) {
-            commentRepository.saveAll(commentList);
+            commentList.stream().filter(c -> Objects.isNull(c.getId())).forEach(commentRepository::save);
         }
     }
 
