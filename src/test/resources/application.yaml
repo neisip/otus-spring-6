@@ -1,13 +1,6 @@
 spring:
-  liquibase.enabled: true
-  datasource:
-    data: testData.sql
-    url: jdbc:h2:mem:testdb
-    initialization-mode: always
-
-  jpa:
-    show-sql: true
-    generate-ddl: false
-    hibernate:
-      ddl-auto: none
-
+  data:
+    mongodb:
+      uri: mongodb://localhost
+      port: 0
+      database: test

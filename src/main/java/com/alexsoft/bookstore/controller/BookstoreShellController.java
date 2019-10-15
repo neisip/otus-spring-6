@@ -1,11 +1,7 @@
 package com.alexsoft.bookstore.controller;
 
-import org.springframework.shell.standard.ShellOption;
-
 public interface BookstoreShellController {
     void showBooks();
-
-    void showGenres();
 
     void showAuthors();
 
@@ -15,7 +11,6 @@ public interface BookstoreShellController {
 
     void showBooksByGenreTitle(String title);
 
-
     void addBook(
             String title,
             String authorName,
@@ -24,11 +19,9 @@ public interface BookstoreShellController {
 
     void addCommentToBookWithTitleAndAuthor(String commentText, String title, String author);
 
-    void addGenre(String title);
 
     void addAuthor(String name);
 
-    void removeGenreByTitle(String title);
 
     void removeAuthorByName(String name);
 

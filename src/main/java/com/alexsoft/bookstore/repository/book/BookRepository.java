@@ -1,32 +1,14 @@
 package com.alexsoft.bookstore.repository.book;
 
 import com.alexsoft.bookstore.domain.Book;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface BookRepository extends JpaRepository<Book, Long> {
-    @Transactional
+public interface BookRepository extends MongoRepository<Book, String>, BookRepositoryCustom {
     void deleteByTitle(String title);
+    Optional<Book> findOneByTitle(String title);
+    List<Book> findBooksByGenre(String genre);
 
-    @Override
-    @EntityGraph(value = "BookEntityGraph", type = EntityGraph.EntityGraphType.LOAD)
-    @Transactional(readOnly = true)
-    List<Book> findAll();
-
-    @Transactional(readOnly = true)
-    @EntityGraph(value = "BookEntityGraph", type = EntityGraph.EntityGraphType.LOAD)
-    List<Book> findBooksByAuthorName(String name);
-
-    @Transactional(readOnly = true)
-    @EntityGraph(value = "BookEntityGraph", type = EntityGraph.EntityGraphType.LOAD)
-    Optional<Book> findBookByAuthorNameAndTitle(String authorName, String title);
-
-    @Transactional(readOnly = true)
-    @EntityGraph(value = "BookEntityGraph", type = EntityGraph.EntityGraphType.LOAD)
-    List<Book> findBooksByGenreTitle(String genreTitle);
 }

@@ -1,11 +1,14 @@
 package com.alexsoft.bookstore.repository.author;
 
 import com.alexsoft.bookstore.domain.Author;
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+import java.util.List;
+import java.util.Optional;
 
 
-public interface AuthorRepository extends CrudRepository<Author, Long> {
-    @Transactional
+public interface AuthorRepository extends MongoRepository<Author, String> {
     void deleteByName(String name);
+    Optional<Author> findOneByName(String name);
+    List<Author> findAllByName(String name);
 }

@@ -3,20 +3,21 @@ package com.alexsoft.bookstore.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import javax.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "comments")
+@Document
 public class Comment {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private @Id
+    String id;
 
-    @Column(name = "text", nullable = false)
     private String text;
+
+    public Comment(String text) {
+        this.text = text;
+    }
 }

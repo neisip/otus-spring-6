@@ -3,39 +3,31 @@ package com.alexsoft.bookstore.domain;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.BatchSize;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-@Table(name = "books")
-@NamedEntityGraph(name = "BookEntityGraph",
-        attributeNodes = {@NamedAttributeNode(value = "author"),
-                @NamedAttributeNode(value = "genre"),
-                @NamedAttributeNode(value = "commentList")})
+@Document
 public class Book {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
 
-    @Column(name = "title", nullable = false)
+    private @Id
+    String id;
+
     private String title;
 
-    @ManyToOne(targetEntity = Author.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "author_id")
-    private Author author;
+    private @DBRef
+    Author author;
 
-    @ManyToOne(targetEntity = Genre.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "genre_id")
-    private Genre genre;
+    private String genre;
 
-    @BatchSize(size = 10)
-    @OneToMany(targetEntity = Comment.class, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "book_id")
+    @DBRef(lazy = true)
     private List<Comment> commentList;
+
+
 }

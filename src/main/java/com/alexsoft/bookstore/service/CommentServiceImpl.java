@@ -18,7 +18,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public void addCommentToBookWithTitleAndAuthorName(String commentText, String bookTitle, String authorName) {
-        bookRepository.findBookByAuthorNameAndTitle(authorName, bookTitle).ifPresent(b -> {
+        bookRepository.findOneByTitleAndAuthor_Name(bookTitle, authorName).ifPresent(b -> {
             val c = new Comment();
             c.setText(commentText);
             val commentList = b.getCommentList();
