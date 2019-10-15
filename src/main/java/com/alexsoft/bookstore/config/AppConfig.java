@@ -7,9 +7,11 @@ import com.mongodb.MongoClient;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @EnableConfigurationProperties
 @Configuration
+@EnableMongoRepositories(basePackages = "com.alexsoft.bookstore.repository")
 public class AppConfig {
     private static final String CHANGELOGS_PACKAGE = "com.alexsoft.bookstore.changelog";
 
@@ -23,4 +25,7 @@ public class AppConfig {
     ConsoleContext consoleContext() {
         return new ConsoleContext(System.out);
     }
+
+
 }
+

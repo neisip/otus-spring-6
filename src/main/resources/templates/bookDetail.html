@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Book detail</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        .table {
+            border: 5px solid lightgray;
+            padding: 5px;
+
+        }
+
+
+    </style>
+</head>
+<body>
+   <h1 th:text="${book.title}">Book title</h1>
+   <h2 th:text="${book.author.name}">Author</h2>
+
+   <form action="#" th:action="@{/book/{id}/update(id=${book.id})}" th:object="${book}"  th:method="put">
+       <p  th:text="#{books.genre} +':'">Genre: </p>
+       <input type="text" th:field="*{genre}" th:value="*{genre}"/><input type="submit" value="Update" th:value ="#{books.update}" />
+   </form>
+
+   <form action="#" th:action="@{/book/{id}/comment/add(id=${book.id})}" th:object="${comment}" method="post">
+       <p th:text="#{comment.add} +':'">Input new comment:</p>
+       <input type="text" th:field="*{text}" /><input type="submit" value="Add" th:value ="#{books.add}" />
+   </form>
+
+   <div th:if="${book.commentList != null && !(book.commentList.isEmpty())}">
+       <table class="table">
+           <thead>
+               <tr>
+                   <th th:text = "#{books.comments}">Comments</th>
+               </tr>
+           </thead>
+           <tbody>
+               <th:block th:each="comment : ${book.commentList}">
+
+                   <tr>
+                       <td th:text="${comment.text}">A book title</td>
+                       <td>
+                           <form action="#" th:action="@{/book/{id}/comment/{comment_id}/delete(id=${book.id}, comment_id=${comment.id})}"  th:method="delete">
+                               <p><input type="submit" value="Delete" th:value ="#{books.delete}"/></p>
+                           </form>
+                       </td>
+                   </tr>
+               </th:block>
+           </tbody>
+       </table>
+
+   </div>
+
+</body>
+</html>

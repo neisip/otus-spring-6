@@ -1,4 +1,8 @@
-spring.data.mongodb:
-  host: localhost
-  port: 27017
-  database: myMongo
+spring:
+  http.encoding.enabled: false
+  data.mongodb:
+    host: localhost
+    port: 27017
+    database: myMongo
+server:
+  port: 7001
