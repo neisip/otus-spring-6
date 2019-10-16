@@ -3,6 +3,7 @@ package com.alexsoft.bookstore.controller;
 import com.alexsoft.bookstore.domain.Author;
 import com.alexsoft.bookstore.domain.Book;
 import com.alexsoft.bookstore.repository.book.BookRepository;
+import com.alexsoft.bookstore.utils.BookMappingUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.val;
 import org.hamcrest.Matchers;
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
@@ -42,6 +44,7 @@ public class BookControllerTest {
     private List<Book> makeMockBooks() {
 
         val b = new Book();
+        b.setId("1");
         b.setTitle("123");
         b.setAuthor(new Author("123"));
         b.setGenre("123");
@@ -50,8 +53,14 @@ public class BookControllerTest {
 
     @Test
     void itReturnsBooksOnListCall() throws Exception {
-        //given
 
+        //given
+        val bi = makeMockBooks()
+                .stream()
+                .map(BookMappingUtil::mapBookToBookInfoDto)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
         given(bookRepository.findAll()).willReturn(books);
 
         //when
@@ -59,9 +68,7 @@ public class BookControllerTest {
 
         //then
         ra.andExpect(status().isOk())
-                .andExpect(model(). attribute("books", books));
-
-
+                .andExpect(model().attribute("books", bi));
     }
 
     @Test
@@ -71,7 +78,7 @@ public class BookControllerTest {
         val params = new LinkedMultiValueMap<String, String>();
         params.set("title", b.getTitle());
         params.set("genre", b.getGenre());
-        params.set("author.name", b.getAuthor().getName());
+        params.set("authorName", b.getAuthor().getName());
 
         //given
         given(bookRepository.save(argThat((book) ->

@@ -30,7 +30,7 @@
         <input type="text" th:field="*{genre}" />
 
         <p th:text="#{books.authorName} +':'">Author name: </p>
-        <input type="text" th:field="*{author.name}" />
+        <input type="text" th:field="*{authorName}" />
         <p><input type="submit" value="Add" th:value="#{books.add}" /></p>
     </form>
 
@@ -43,13 +43,13 @@
     </tr>
     </thead>
     <tbody >
-        <th:block th:each="book : ${books}">
+        <th:block th:each="bk : ${books}">
             <tr >
-                <td><a th:href="@{/book/{id}(id=${book.id})}" th:text="${book.title}" href="/book/1"/></td>
-                <td th:text="${book.author.name}">A book author name</td>
-                <td th:text="${book.genre}">Book genre</td>
+                <td><a th:href="@{/book/{id}(id=${bk.id})}" th:text="${bk.title}" href="/book/1"/></td>
+                <td th:text="${bk.authorName}">A book author name</td>
+                <td th:text="${bk.genre}">Book genre</td>
                 <td>
-                    <form action="#" th:action="@{/book/delete/{id}(id=${book.id})}"  th:method="delete">
+                    <form action="#" th:action="@{/book/delete/{id}(id=${bk.id})}"  th:method="delete">
                         <p><input type="submit" value="Delete" th:value="#{books.delete}" /></p>
                     </form>
                 </td>
