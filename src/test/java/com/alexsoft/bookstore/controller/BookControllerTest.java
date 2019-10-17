@@ -6,31 +6,29 @@ import com.alexsoft.bookstore.repository.book.BookRepository;
 import com.alexsoft.bookstore.utils.BookMappingUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.val;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = BookController.class)
+@WebMvcTest(controllers = BookApiController.class)
 public class BookControllerTest {
 
     @Autowired
@@ -39,61 +37,51 @@ public class BookControllerTest {
     @MockBean
     private BookRepository bookRepository;
 
-    private List<Book> books = makeMockBooks();
-
-    private List<Book> makeMockBooks() {
-
+    private List<Book> books = Arrays.asList(makeMockBook());
+    private Book b = makeMockBook();
+    private Book makeMockBook() {
         val b = new Book();
         b.setId("1");
         b.setTitle("123");
         b.setAuthor(new Author("123"));
         b.setGenre("123");
-        return Arrays.asList(b);
+        return b;
     }
+
 
     @Test
     void itReturnsBooksOnListCall() throws Exception {
 
-        //given
-        val bi = makeMockBooks()
-                .stream()
-                .map(BookMappingUtil::mapBookToBookInfoDto)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
         given(bookRepository.findAll()).willReturn(books);
 
         //when
-        ResultActions ra = mvc.perform(get("/book/list"));
+        ResultActions ra = mvc.perform(get("/api/book/list"));
 
         //then
-        ra.andExpect(status().isOk())
-                .andExpect(model().attribute("books", bi));
+        ra.andExpect(status()
+                .isOk())
+                .andExpect(jsonPath("$[0].title", is(b.getTitle())))
+                .andExpect(jsonPath("$[0].id", is(b.getId())));
     }
 
     @Test
     void itAddsBooks() throws Exception {
-        val b = books.get(0);
-
-        val params = new LinkedMultiValueMap<String, String>();
-        params.set("title", b.getTitle());
-        params.set("genre", b.getGenre());
-        params.set("authorName", b.getAuthor().getName());
 
         //given
+        String jsonString = new ObjectMapper().writeValueAsString(BookMappingUtil.mapBookToBookInfoDto(b).get());
         given(bookRepository.save(argThat((book) ->
-
                 book.getTitle().equals(b.getTitle()) &&
                 book.getGenre().equals(b.getGenre()) &&
                 book.getAuthor().getName().equals(b.getAuthor().getName())))
         ).willReturn(b);
 
-
         //when
-        val res = mvc.perform(post("/book/add").params(params));
+        val res = mvc.perform(post("/api/book/add")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonString));
 
         //then
-        res.andExpect(status().is3xxRedirection());
+        res.andExpect(status().isOk()).andExpect(content().string(b.getId()));
         verify(bookRepository).save(any());
 
     }
@@ -101,15 +89,15 @@ public class BookControllerTest {
     @Test
     void itDeletesBook() throws Exception {
         //given
-        val b = books.get(0);
+
         given(bookRepository.findById("1")).willReturn(Optional.of(b));
         doNothing().when(bookRepository).delete(b);
 
         //when
-        val res = mvc.perform(delete("/book/delete/1"));
+        val res = mvc.perform(delete("/api/book/1"));
 
         //then
-        res.andExpect(status().is3xxRedirection());
+        res.andExpect(status().isOk());
         verify(bookRepository).findById(any());
         verify(bookRepository).delete(b);
     }
@@ -120,7 +108,7 @@ public class BookControllerTest {
         given(bookRepository.findById("1")).willReturn(Optional.empty());
 
         //when
-        val res =  mvc.perform(delete("/book/delete/1"));
+        val res =  mvc.perform(delete("/api/book/1"));
 
         //then
         res.andExpect(status().is4xxClientError());

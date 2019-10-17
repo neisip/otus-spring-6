@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Bookstore books</title>
+    <style type="text/css">
+        body {
+            padding: 50px;
+        }
+
+        .table, .form {
+            border: 5px solid lightgray;
+            padding: 5px;
+
+        }
+
+        .form {
+          float: left;
+        }
+    </style>
+</head>
+
+<body>
+<div id="books-table">
+
+    <h1 th:text="#{bookstore.title}">Books in library</h1>
+        <div class = "form">
+            <p><input v-model="title" th:placeholder="#{books.title}" /></p>
+            <p><input v-model="genre" th:placeholder="#{books.genre}" /></p>
+            <p><input v-model="authorName" th:placeholder="#{books.authorName}" /></p>
+            <button @click="addBook(title, genre, authorName)" th:text="#{books.add}"></button>
+
+        </div>
+
+    <table class = "table" >
+        <thead>
+        <tr>
+            <th th:text="#{books.title}">Title</th>
+            <th th:text="#{books.authorName}">Author name</th>
+            <th th:text="#{books.genre}">Genre</th>
+        </tr>
+        </thead>
+        <tbody >
+        <tr v-for="bk in books">
+            <td><a :href="'/book/'+ bk.id" />{{ bk.title }}</td>
+            <td>{{ bk.authorName }}</td>
+            <td>{{ bk.genre }}</td>
+            <td> <button @click="deleteBook(bk.id)" th:text="#{books.delete}"></button>
+            </td>
+        </tr>
+
+    </table>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
+<script type="text/babel">
+fetch('api/book/list')
+     .then(response => response.json())
+     .then(books => {
+         new Vue({
+             el: '#books-table',
+             data: {
+                title: '',
+                genre: '',
+                authorName: '',
+                books: books
+             },
+             methods: {
+                 addBook: function(title, genre, authorName) {
+
+                    fetch('/api/book/add', {
+                      method: 'POST',
+                      headers: {
+                          'Accept': 'application/json',
+                          'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify({title: title, genre: genre, authorName: authorName})
+                    }).then(response => response.text())
+                    .then(bookId => {
+                       this.books.push({
+                          id: bookId,
+                          title: title,
+                          genre: genre,
+                          authorName: authorName
+                        })
+                 })
+                },
+                 deleteBook: function(bookId) {
+                     fetch('/api/book/'+bookId, {method:"DELETE"}).then(response => {
+                     if(response.ok) {
+                         this.books = this.books.filter(function(value, index, arr){
+                           return value.id != bookId;
+                        })
+
+                      } })
+                 }
+             }
+         })
+     });
+</script>
+</body>
+</html>
