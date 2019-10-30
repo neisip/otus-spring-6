@@ -49,13 +49,12 @@ public class InitBookstoreDbChangelog {
     public void initBooks(MongoTemplate template) {
 
         val authorList = makeAuthors(template);
-        val commentList = makeComments(template);
 
         val elegantObjects = new Book();
         elegantObjects.setAuthor(authorList.get(0));
         elegantObjects.setTitle("Elegant objects");
         elegantObjects.setGenre("Psychological thriller");
-        elegantObjects.setCommentList(commentList);
+        elegantObjects.setCommentList(makeComments(template));
         template.save(elegantObjects);
 
         val adaptology = new Book();

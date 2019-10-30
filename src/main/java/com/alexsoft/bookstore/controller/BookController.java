@@ -1,60 +1,16 @@
 package com.alexsoft.bookstore.controller;
 
 import com.alexsoft.bookstore.controller.dto.BookInfoDto;
-import com.alexsoft.bookstore.controller.exceptions.NotFoundException;
-import com.alexsoft.bookstore.domain.Author;
-import com.alexsoft.bookstore.domain.Book;
-import com.alexsoft.bookstore.repository.book.BookRepository;
-import com.alexsoft.bookstore.utils.BookMappingUtil;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.val;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-@RequiredArgsConstructor
-@RequestMapping("/book")
 public class BookController {
 
-    private final @NonNull BookRepository bookRepository;
-
-    @GetMapping("/list")
-    public @NonNull String bookList(@NonNull final Model model) {
-        List<BookInfoDto> books = bookRepository.findAll()
-                .stream()
-                .map(BookMappingUtil::mapBookToBookInfoDto)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
-
+    @GetMapping("/")
+    public String index(Model model) {
         model.addAttribute("book", new BookInfoDto());
-        model.addAttribute("books", books);
-        return "books";
-    }
-
-    @PostMapping("/add")
-    public @NonNull String addBook(@NonNull final BookInfoDto book,
-                                   @NonNull final BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return "books";
-        }
-
-        BookMappingUtil.mapBookInfoToBook(book).ifPresent(bookRepository::save);
-        return "redirect:/book/list";
-    }
-
-
-    @DeleteMapping("/delete/{id}")
-    public @NonNull String deleteBookById(@PathVariable("id") @NonNull final String id) {
-        val b = bookRepository.findById(id).orElseThrow(NotFoundException::new);
-        bookRepository.delete(b);
-        return "redirect:/book/list";
+        return "index";
     }
 }
