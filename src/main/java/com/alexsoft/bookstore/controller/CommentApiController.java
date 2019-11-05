@@ -36,7 +36,7 @@ public class CommentApiController {
     }
 
     @DeleteMapping("/{comment_id}")
-    public @NonNull Mono<ServerResponse> deleteCommentById(@PathVariable("id") @NonNull final String id,
+    public @NonNull Mono<ResponseEntity<Void>> deleteCommentById(@PathVariable("id") @NonNull final String id,
                                                            @PathVariable("comment_id") @NonNull final String commentId) {
 
         return bookRepository.findById(id)
@@ -45,7 +45,7 @@ public class CommentApiController {
                     return bookRepository.save(b);
 
                 }).then(commentRepository.deleteById(id))
-                .flatMap(e -> ServerResponse.ok().build())
-                .switchIfEmpty(ServerResponse.notFound().build());
+                .map(e -> ResponseEntity.ok().<Void>build())
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
 }
