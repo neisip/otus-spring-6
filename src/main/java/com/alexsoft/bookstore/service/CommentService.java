@@ -1,5 +1,12 @@
 package com.alexsoft.bookstore.service;
 
+import com.alexsoft.bookstore.domain.Comment;
+import lombok.NonNull;
+import reactor.core.publisher.Mono;
+
 public interface CommentService {
-    void addCommentToBookWithTitleAndAuthorName(String commentText, String bookTitle, String authorName);
+    @NonNull Mono<Comment> addCommentToBookWithTitleAndAuthorName(
+            @NonNull final String commentText,
+            @NonNull final String bookTitle,
+            @NonNull final String authorName);
 }

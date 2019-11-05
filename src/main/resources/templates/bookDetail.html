@@ -18,42 +18,102 @@
     </style>
 </head>
 <body>
-   <h1 th:text="${book.title}">Book title</h1>
-   <h2 th:text="${book.author.name}">Author</h2>
+<div id="bookDetail">
+    <h1> {{book.title}}</h1>
+    <h2> {{book.authorName}} </h2>
 
-   <form action="#" th:action="@{/book/{id}/update(id=${book.id})}" th:object="${book}"  th:method="put">
-       <p  th:text="#{books.genre} +':'">Genre: </p>
-       <input type="text" th:field="*{genre}" th:value="*{genre}"/><input type="submit" value="Update" th:value ="#{books.update}" />
-   </form>
+    <div class="table">
+        <p>
+        <p th:text="#{books.genre}"></p>
+        <input v-model="book.genre"/>
+        </p>
+        <button @click="updateBook(book.genre)" th:text="#{books.update}"></button>
+    </div>
 
-   <form action="#" th:action="@{/book/{id}/comment/add(id=${book.id})}" th:object="${comment}" method="post">
-       <p th:text="#{comment.add} +':'">Input new comment:</p>
-       <input type="text" th:field="*{text}" /><input type="submit" value="Add" th:value ="#{books.add}" />
-   </form>
+    <div class="table">
+        <p th:text="#{comment.add} +':'">Input new comment:</p>
+        <p><input v-model="commentText"/></p>
+        <button @click="addComment(commentText)" th:text="#{books.update}"></button>
+    </div>
 
-   <div th:if="${book.commentList != null && !(book.commentList.isEmpty())}">
-       <table class="table">
-           <thead>
-               <tr>
-                   <th th:text = "#{books.comments}">Comments</th>
-               </tr>
-           </thead>
-           <tbody>
-               <th:block th:each="comment : ${book.commentList}">
-
-                   <tr>
-                       <td th:text="${comment.text}">A book title</td>
-                       <td>
-                           <form action="#" th:action="@{/book/{id}/comment/{comment_id}/delete(id=${book.id}, comment_id=${comment.id})}"  th:method="delete">
-                               <p><input type="submit" value="Delete" th:value ="#{books.delete}"/></p>
-                           </form>
-                       </td>
-                   </tr>
-               </th:block>
-           </tbody>
-       </table>
-
-   </div>
-
+    <div v-if="Array.isArray(book.comments) && book.comments.length">
+        <table class="table">
+            <thead>
+            <tr>
+                <th th:text="#{books.comments}">Comments</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr v-for="comment in book.comments">
+                <td>{{comment.text}}</td>
+                <td>
+                    <button @click="deleteComment(comment.id)" th:text="#{books.delete}"></button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.16/dist/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.21.1/babel.min.js"></script>
+<script type="text/babel">
+let bookId = window.location.href.split("/").pop()
+let path = window.location.origin +'/api/book/'+bookId+'/detail'
+fetch(path)
+     .then(response => response.json())
+     .then(b => {
+         new Vue({
+                     el: '#bookDetail',
+                     data: {
+                        book: b
+                     },
+                     methods: {
+                        updateBook: function(genre) {
+                            fetch('/api/book/'+bookId, {
+                                method: 'POST',
+                                headers: {
+                                  'Accept': 'application/json',
+                                  'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({id: bookId, genre: genre})
+                            }).then(response => {
+                                if(response.ok) {
+                                    this.book.genre = genre
+                                }
+                            })
+                        },
+                        log(item) {
+                            console.log(item)
+                        },
+                        addComment: function(commentText) {
+                            fetch('/api/book/'+bookId+'/comment/add', {
+                                method: 'POST',
+                                headers: {
+                                  'Accept': 'application/json',
+                                  'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({text: commentText})
+                            }).then(response => response.text())
+                            .then(commentId => {
+                              this.book.comments.push({
+                                id: commentId,
+                                text: commentText
+                              })
+                            })
+                        },
+                        deleteComment: function(commentId) {
+                          fetch('/api/book/'+bookId+'/comment/'+commentId, {method:"DELETE"})
+                          .then(response => {
+                              if(response.ok) {
+                                this.book.comments= this.book.comments.filter(function(value, index, arr){
+                                  return value.id != commentId;
+                                })
+                              }
+                            })
+                          }
+                        }
+                 })
+         })
+</script>
 </html>
